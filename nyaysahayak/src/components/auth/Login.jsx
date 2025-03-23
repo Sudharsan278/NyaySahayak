@@ -23,7 +23,7 @@ const LoginPage = () => {
 
   // Effect to check if user is already logged in
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('nyayasathi_user'));
+    const user = JSON.parse(localStorage.getItem('nyaysahayak_user'));
     if (user) {
       navigate('/dashboard');
     }
@@ -107,12 +107,12 @@ const LoginPage = () => {
       
       if (isEmailValid && isPasswordValid) {
         // Check if user exists in localStorage
-        const users = JSON.parse(localStorage.getItem('nyayasathi_users') || '[]');
+        const users = JSON.parse(localStorage.getItem('nyaysahayak_users') || '[]');
         const user = users.find(u => u.email === email && u.password === password);
         
         if (user) {
           // Save current user to localStorage
-          localStorage.setItem('nyayasathi_user', JSON.stringify(user));
+          localStorage.setItem('nyaysahayak_user', JSON.stringify(user));
           navigate('/dashboard');
         } else {
           alert('Invalid email or password');
@@ -128,7 +128,7 @@ const LoginPage = () => {
       
       if (isEmailValid && isUsernameValid && isMobileValid && isPasswordValid && isConfirmPasswordValid) {
         // Get existing users or create empty array
-        const users = JSON.parse(localStorage.getItem('nyayasathi_users') || '[]');
+        const users = JSON.parse(localStorage.getItem('nyaysahayak_users') || '[]');
         
         // Check if email already exists
         if (users.some(user => user.email === email)) {
@@ -149,8 +149,8 @@ const LoginPage = () => {
         users.push(newUser);
         
         // Save to localStorage
-        localStorage.setItem('nyayasathi_users', JSON.stringify(users));
-        localStorage.setItem('nyayasathi_user', JSON.stringify(newUser));
+        localStorage.setItem('nyaysahayak_users', JSON.stringify(users));
+        localStorage.setItem('nyaysahayak_user', JSON.stringify(newUser));
         
         // Navigate to dashboard
         navigate('/dashboard');

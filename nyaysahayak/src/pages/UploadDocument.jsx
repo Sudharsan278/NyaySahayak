@@ -22,7 +22,7 @@ const UploadDocument = () => {
     setTimeout(() => {
       setUploading(false);
       setUploadSuccess(true);
-      // In a real app, you would send the file to your backend here
+      // TODO: - Will send the file for processing!
     }, 2000);
   };
   

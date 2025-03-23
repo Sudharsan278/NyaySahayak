@@ -4,11 +4,10 @@ import {Link, useNavigate} from 'react-router-dom'
 const Navbar = () => {
 
     const navigate = useNavigate();
-    const user = JSON.parse(localStorage.getItem('nyayasathi_user') || '{}');
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const user = JSON.parse(localStorage.getItem('nyaysahayak_user') || '{}');
 
     const handleLogout = () => {
-        localStorage.removeItem('nyayasathi_user');
+        localStorage.removeItem('nyaysahayak_user');
         navigate('/');
     };
 
@@ -19,7 +18,7 @@ const Navbar = () => {
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                 <div className="flex-shrink-0">
-                    <h1 className="text-white font-bold text-xl">NyayaSathi</h1>
+                    <h1 className="text-white font-bold text-xl">NyaySahayak</h1>
                 </div>
                 <div className="hidden md:block">
                     <div className="ml-10 flex items-baseline space-x-4">

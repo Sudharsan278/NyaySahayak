@@ -11,7 +11,7 @@ import Navbar from './components/Navbar';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem('nyayasathi_user'));
+  const user = JSON.parse(localStorage.getItem('nyaysahayak_user'));
   if (!user) {
     return <Navigate to="/" replace />;
   }
@@ -32,11 +32,31 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        {/* Independent Routes */}
+        <Route 
+          path="/upload" 
+          element={
+            <ProtectedRoute>
+              <UploadDocument />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/advice" 
+          element={
+            <ProtectedRoute>
+              <LegalAdvice />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/acts" 
+          element={
+            <ProtectedRoute>
+              <Acts />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/about" element={<About />} />
-        <Route path="/upload" element={<UploadDocument />} />
-        <Route path="/advice" element={<LegalAdvice />} />
-        <Route path="/acts" element={<Acts />} />
       </Routes>
     </Router>
   );
