@@ -6,7 +6,7 @@ const About = () => {
     <div className="bg-gray-100 min-h-screen">
       {/* Hero Section */}
       <div className="bg-indigo-700 text-white text-center py-12">
-        <h1 className="text-3xl font-bold">About NyayaSathi</h1>
+        <h1 className="text-3xl font-bold">About NyaySahayak</h1>
         <p className="mt-2 text-lg">Your personal legal assistant</p>
       </div>
 
@@ -17,7 +17,7 @@ const About = () => {
           {/* About Section */}
           <div className="bg-white p-6 shadow-lg rounded-lg">
             <p className="text-gray-700 text-lg">
-              NyayaSathi is a comprehensive legal assistance platform designed to help individuals 
+            NyaySahayak is a comprehensive legal assistance platform designed to help individuals 
               navigate the complexities of the legal system. Our mission is to make legal 
               information accessible, understandable, and actionable for everyone.
             </p>
@@ -54,7 +54,7 @@ const About = () => {
             <div>
               <h3 className="text-xl font-semibold">Our Team</h3>
               <p className="text-gray-700">
-                NyayaSathi is developed by a team of legal experts, technologists, and accessibility 
+                NyaySahayak is developed by a team of legal experts, technologists, and accessibility 
                 advocates committed to bridging the gap between legal professionals and the public.
               </p>
             </div>
@@ -66,10 +66,10 @@ const About = () => {
               <FaEnvelope className="text-blue-600 text-2xl mr-2" /> Contact Us
             </h3>
             <p className="text-gray-700 mt-2">
-              If you have any questions or feedback about NyayaSathi, please contact us at:
+              If you have any questions or feedback about NyaySahayak, please contact us at:
             </p>
             <p className="mt-3 text-gray-800 flex items-center">
-              <FaEnvelope className="text-blue-600 mr-2" /> support@nyayasathi.com
+              <FaEnvelope className="text-blue-600 mr-2" /> support@nyaysahayak.com
             </p>
             <p className="text-gray-800 flex items-center mt-1">
               <FaPhone className="text-blue-600 mr-2" /> +91-123-456-7890
