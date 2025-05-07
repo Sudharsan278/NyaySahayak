@@ -75,6 +75,7 @@ build/
 !**/application.properties
 !**/application.yml
 !**/application.yaml
+nyaysahayak/src/main/resources/application.properties
 
 ### Environment Variables ###
 .env
