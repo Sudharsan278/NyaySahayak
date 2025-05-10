@@ -6,7 +6,6 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, CheckCircle, Loader2, AlertCircle, Upload, Globe, Volume2, ChevronDown } from 'lucide-react';
 
-// Initialize PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerPort = new pdfjsWorker();
 
 const DocumentAnalyzer = () => {
@@ -26,7 +25,6 @@ const DocumentAnalyzer = () => {
   const audioRef = useRef(null);
   const fileInputRef = useRef(null);
   
-  // List of supported languages based on your image
   const languages = [
     { code: 'bn-IN', name: 'Bengali' },
     { code: 'gu-IN', name: 'Gujarati' },
@@ -117,7 +115,6 @@ const DocumentAnalyzer = () => {
     }
   };
 
-  // Use effect to react to analysis type change
   useEffect(() => {
     if (text && !loading) {
       setLoading(true);
@@ -147,7 +144,6 @@ const DocumentAnalyzer = () => {
 
       const response = await axios.post(endpoint, payload);
       
-      // Pre-process the text to remove # from headings
       let processedContent = response.data.choices[0].message.content;
       processedContent = processedContent.replace(/^# (.*?)(?=\n|$)/gm, '$1');
       processedContent = processedContent.replace(/^## (.*?)(?=\n|$)/gm, '$1');
@@ -166,7 +162,7 @@ const DocumentAnalyzer = () => {
     if (!result || translating) return;
     
     setTranslating(true);
-    setAudioUrl(null); // Reset audio when translating to a new language
+    setAudioUrl(null); 
 
     try {
       const response = await fetch('https://api.sarvam.ai/translate', {
@@ -214,14 +210,12 @@ const DocumentAnalyzer = () => {
       const data = await response.json();
       
       if (data.audios && data.audios.length > 0) {
-        // Convert base64 to audio URL
         const audioBase64 = data.audios[0];
         const audioBlob = base64ToBlob(audioBase64, 'audio/wav');
         const url = URL.createObjectURL(audioBlob);
         
         setAudioUrl(url);
         
-        // Play the audio
         if (audioRef.current) {
           audioRef.current.src = url;
           audioRef.current.play();
@@ -235,7 +229,6 @@ const DocumentAnalyzer = () => {
     }
   };
   
-  // Utility function to convert base64 to Blob
   const base64ToBlob = (base64, mimeType) => {
     const byteCharacters = atob(base64);
     const byteArrays = [];
@@ -258,15 +251,15 @@ const DocumentAnalyzer = () => {
   const handleAnalysisTypeChange = (type) => {
     if (type !== analysisType) {
       setAnalysisType(type);
-      setTranslatedText(null); // Reset translation when analysis type changes
-      setAudioUrl(null); // Reset audio when analysis type changes
+      setTranslatedText(null); 
+      setAudioUrl(null); 
     }
   };
   
   const handleLanguageChange = (e) => {
     setTargetLanguage(e.target.value);
-    setTranslatedText(null); // Reset translation when language changes
-    setAudioUrl(null); // Reset audio when language changes
+    setTranslatedText(null); 
+    setAudioUrl(null); 
   };
 
   const triggerFileInput = () => {
@@ -277,7 +270,6 @@ const DocumentAnalyzer = () => {
     setShowFullText(!showFullText);
   };
 
-  // Improved content formatter that works consistently for all types of content
   const formatContent = (content) => {
     if (!content) return null;
     
@@ -317,7 +309,6 @@ const DocumentAnalyzer = () => {
     );
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 

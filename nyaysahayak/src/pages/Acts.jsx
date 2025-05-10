@@ -10,19 +10,16 @@ const Acts = () => {
   const [error, setError] = useState(null);
   const [selectedActId, setSelectedActId] = useState(null);
   
-  // Fetch acts from the backend API
   useEffect(() => {
     const fetchActs = async () => {
       try {
         setLoading(true);
         const response = await fetch('http://localhost:8080/api/acts');
         
-        // Check if response is OK
         if (!response.ok) {
           throw new Error(`Failed to fetch acts: ${response.status} ${response.statusText}`);
         }
         
-        // Check content type to avoid parsing non-JSON responses
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
           throw new Error('Received non-JSON response from server');
@@ -56,12 +53,10 @@ const Acts = () => {
     setSelectedActId(actId);
   };
 
-  // Close detail view
   const handleCloseDetails = () => {
     setSelectedActId(null);
   };
 
-  // Get selected act data
   const selectedAct = acts.find(act => act.id === selectedActId);
 
   // Animation variants for list items
@@ -87,11 +82,11 @@ const Acts = () => {
   // Loading spinner
   if (loading) {
     return (
-      <div className="bg-indigo-900 min-h-screen">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 py-8">
-          <div className="bg-indigo-800 p-6 rounded-lg shadow-lg mb-6">
-            <h1 className="text-white text-2xl font-bold">Legal Acts & Statutes</h1>
-            <p className="text-indigo-200">Browse and search through important legal acts and statutes of India</p>
+          <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h1 className="text-indigo-800 text-2xl font-bold">Legal Acts & Statutes</h1>
+            <p className="text-indigo-600">Browse and search through important legal acts and statutes of India</p>
           </div>
           
           <div className="flex justify-center items-center h-64">
@@ -108,11 +103,11 @@ const Acts = () => {
   // Error state
   if (error) {
     return (
-      <div className="bg-indigo-900 min-h-screen">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 py-8">
-          <div className="bg-indigo-800 p-6 rounded-lg shadow-lg mb-6">
-            <h1 className="text-white text-2xl font-bold">Legal Acts & Statutes</h1>
-            <p className="text-indigo-200">Browse and search through important legal acts and statutes of India</p>
+          <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h1 className="text-indigo-800 text-2xl font-bold">Legal Acts & Statutes</h1>
+            <p className="text-indigo-600">Browse and search through important legal acts and statutes of India</p>
           </div>
           
           <motion.div 
@@ -137,12 +132,12 @@ const Acts = () => {
   }
   
   return (
-    <div className="bg-indigo-900 min-h-screen">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
         {/* Main content area */}
-        <div className="bg-indigo-800 p-6 rounded-lg shadow-lg mb-6">
-          <h1 className="text-white text-2xl font-bold">Legal Acts & Statutes</h1>
-          <p className="text-indigo-200">Browse and search through important legal acts and statutes of India</p>
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+          <h1 className="text-indigo-800 text-2xl font-bold">Legal Acts & Statutes</h1>
+          <p className="text-indigo-600">Browse and search through important legal acts and statutes of India</p>
         </div>
       
         {/* Search and filter area */}
@@ -186,7 +181,7 @@ const Acts = () => {
         </div>
         
         {/* Results count */}
-        <div className="text-white text-lg font-medium mb-4">
+        <div className="text-indigo-900 text-lg font-medium mb-4">
           Found {filteredActs.length} acts
         </div>
         
