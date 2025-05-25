@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckCircle, AlertTriangle, BookOpen, Scale, User, FileText } from 'lucide-react';
 
 const LegalAdvice = () => {
   const [query, setQuery] = useState('');
@@ -6,128 +7,268 @@ const LegalAdvice = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [response, setResponse] = useState(null);
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!query) return;
     
     setIsSubmitting(true);
     setResponse(null);
     
-    // Simulate AI response
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setResponse({
-        answer: "Based on your question, I can provide some general guidance. However, please note that this is not a substitute for professional legal advice. I recommend consulting with a qualified attorney for your specific situation.",
-        references: [
-          "Section 10 of the Contract Act, 1872",
-          "Consumer Protection Act, 2019"
-        ]
+    try {
+      const response = await fetch('http://localhost:8080/api/groq/get-advice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: query,
+          category: category
+        })
       });
-    }, 2000);
+      
+      const data = await response.json();
+      console.log(data.answer)
+      setResponse({
+        answer: data.answer,
+        references: data.references || []
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      setResponse({
+        answer: "Sorry, I encountered an error while processing your request. Please try again.",
+        references: []
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const parseResponse = (responseText) => {
+    if (!responseText) return null;
+    
+    const sections = {
+      legalGuidance: '',
+      legalProvisions: '',
+      nextSteps: '',
+      disclaimer: ''
+    };
+    
+    // Split the response into sections based on common patterns
+    const lines = responseText.split('\n');
+    let currentSection = 'legalGuidance';
+    
+    for (let line of lines) {
+      const lowerLine = line.toLowerCase().trim();
+      
+      if (lowerLine.includes('legal guidance') || lowerLine.startsWith('legal guidance')) {
+        currentSection = 'legalGuidance';
+        continue;
+      } else if (lowerLine.includes('relevant legal provisions') || lowerLine.startsWith('legal provisions') || lowerLine.includes('2.')) {
+        currentSection = 'legalProvisions';
+        continue;
+      } else if (lowerLine.includes('next steps') || lowerLine.startsWith('next steps')) {
+        currentSection = 'nextSteps';
+        continue;
+      } else if (lowerLine.includes('disclaimer') || lowerLine.startsWith('disclaimer') || lowerLine.startsWith('important')) {
+        currentSection = 'disclaimer';
+        continue;
+      }
+      
+      if (line.trim()) {
+        sections[currentSection] += line + '\n';
+      }
+    }
+    
+    // If no clear sections found, put everything in legal guidance
+    if (!sections.legalGuidance && !sections.legalProvisions && !sections.nextSteps) {
+      sections.legalGuidance = responseText;
+    }
+    
+    return sections;
+  };
+
+  const parsedResponse = response ? parseResponse(response.answer) : null;
   
   return (
-    <div className="bg-white shadow sm:rounded-lg">
-      <div className="px-4 py-5 sm:px-6">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">
-          Get Legal Advice
-        </h3>
-        <p className="mt-1 max-w-2xl text-sm text-gray-500">
-          Ask questions and get guidance on legal matters
-        </p>
+    <div className="bg-white shadow-xl sm:rounded-xl">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-8">
+        <div className="flex items-center space-x-3">
+          <Scale className="h-8 w-8 text-white" />
+          <div>
+            <h3 className="text-2xl font-bold text-white">
+              Legal Advisory Service
+            </h3>
+            <p className="mt-1 text-blue-100">
+              Get expert guidance on your legal matters
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="border-t border-gray-200">
-        <div className="px-4 py-5 sm:p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+      
+      <div className="px-6 py-8">
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Category
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Legal Category
               </label>
               <select 
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
                 <option value="">Select a category</option>
-                <option value="family">Family Law</option>
-                <option value="property">Property Law</option>
-                <option value="criminal">Criminal Law</option>
-                <option value="civil">Civil Law</option>
-                <option value="consumer">Consumer Rights</option>
-                <option value="employment">Employment Law</option>
-                <option value="other">Other</option>
+                <option value="family">👨‍👩‍👧‍👦 Family Law</option>
+                <option value="property">🏠 Property Law</option>
+                <option value="criminal">⚖️ Criminal Law</option>
+                <option value="civil">📋 Civil Law</option>
+                <option value="consumer">🛡️ Consumer Rights</option>
+                <option value="employment">💼 Employment Law</option>
+                <option value="other">📝 Other</option>
               </select>
             </div>
-            
-            <div>
-              <label htmlFor="query" className="block text-sm font-medium text-gray-700">
-                Your Legal Question
-              </label>
-              <div className="mt-1">
-                <textarea
-                  id="query"
-                  name="query"
-                  rows="4"
-                  className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Describe your legal issue or question in detail"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  required
-                ></textarea>
-              </div>
-              <p className="mt-2 text-sm text-gray-500">
-                Be specific and include relevant details for the most accurate advice.
-              </p>
-            </div>
-            
-            <div>
-              <button
-                type="submit"
-                disabled={isSubmitting || !query}
-                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                  isSubmitting || !query ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
-                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-              >
-                {isSubmitting ? 'Processing...' : 'Get Advice'}
-              </button>
-            </div>
-          </form>
+          </div>
           
-          {response && (
-            <div className="mt-8 border-t border-gray-200 pt-6">
-              <h4 className="text-lg font-medium text-gray-900 mb-4">Legal Guidance</h4>
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <p className="text-gray-700">{response.answer}</p>
-              </div>
+          <div>
+            <label htmlFor="query" className="block text-sm font-semibold text-gray-700 mb-2">
+              Describe Your Legal Question
+            </label>
+            <textarea
+              id="query"
+              name="query"
+              rows={5}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+              placeholder="Please provide detailed information about your legal issue. Include relevant facts, dates, and any specific concerns you have..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              required
+            />
+            <p className="mt-2 text-sm text-gray-600 flex items-center">
+              <FileText className="h-4 w-4 mr-1" />
+              Be specific and include relevant details for the most accurate advice.
+            </p>
+          </div>
+          
+          <div>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting || !query}
+              className={`w-full md:w-auto inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white transition-all duration-200 ${
+                isSubmitting || !query 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 transform hover:scale-105 shadow-lg hover:shadow-xl'
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Analyzing Your Query...
+                </>
+              ) : (
+                <>
+                  <Scale className="h-5 w-5 mr-2" />
+                  Get Legal Advice
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+        
+        {parsedResponse && (
+          <div className="mt-12 space-y-8">
+            <div className="border-t-4 border-blue-500 pt-8">
+              <h4 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <CheckCircle className="h-7 w-7 text-green-500 mr-3" />
+                Legal Analysis & Guidance
+              </h4>
               
-              {response.references && response.references.length > 0 && (
-                <div>
-                  <h5 className="text-sm font-medium text-gray-700 mb-2">Relevant Legal References:</h5>
-                  <ul className="list-disc pl-5 text-sm text-gray-600">
-                    {response.references.map((ref, index) => (
-                      <li key={index}>{ref}</li>
-                    ))}
-                  </ul>
+              {/* Legal Guidance Section */}
+              {parsedResponse.legalGuidance && (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <Scale className="h-6 w-6 text-blue-600 mt-1" />
+                    </div>
+                    <div className="flex-1">
+                      <h5 className="text-lg font-semibold text-blue-900 mb-3">Legal Guidance</h5>
+                      <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                        {parsedResponse.legalGuidance.trim()}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
               
-              <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
+              {/* Legal Provisions Section */}
+              {parsedResponse.legalProvisions && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 mb-6 border border-purple-200">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <BookOpen className="h-6 w-6 text-purple-600 mt-1" />
+                    </div>
+                    <div className="flex-1">
+                      <h5 className="text-lg font-semibold text-purple-900 mb-3">Relevant Legal Provisions</h5>
+                      <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                        {parsedResponse.legalProvisions.trim()}
+                      </div>
+                    </div>
                   </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-yellow-700">
-                      Disclaimer: This is general information and not specific legal advice. For detailed guidance on your matter, please consult with a qualified attorney.
+                </div>
+              )}
+              
+              {/* Next Steps Section */}
+              {parsedResponse.nextSteps && (
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 mb-6 border border-green-200">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <User className="h-6 w-6 text-green-600 mt-1" />
+                    </div>
+                    <div className="flex-1">
+                      <h5 className="text-lg font-semibold text-green-900 mb-3">Recommended Next Steps</h5>
+                      <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                        {parsedResponse.nextSteps.trim()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* References Section */}
+              {response.references && response.references.length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-6 mb-6 border border-gray-200">
+                  <h5 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <BookOpen className="h-5 w-5 text-gray-600 mr-2" />
+                    Legal References
+                  </h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {response.references.map((ref, index) => (
+                      <div key={index} className="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                        <span className="text-sm text-gray-700 font-medium">{ref}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Disclaimer Section */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border-l-4 border-amber-400">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0">
+                    <AlertTriangle className="h-6 w-6 text-amber-600 mt-1" />
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="text-lg font-semibold text-amber-900 mb-2">Important Legal Disclaimer</h5>
+                    <p className="text-amber-800 leading-relaxed">
+                      {parsedResponse.disclaimer ? parsedResponse.disclaimer.trim() : 
+                        "This is general legal information and not specific legal advice tailored to your situation. Laws vary by jurisdiction and circumstances. For personalized legal guidance and representation, please consult with a qualified attorney who can review the specific details of your case."
+                      }
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -26,6 +26,13 @@ const LandingPage = () => {
   const handleGoogleSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
     console.log("Decoded obj ", decoded);
+    console.log(decoded.email);
+    localStorage.clear();
+    localStorage.setItem('Logged in user', JSON.stringify({
+      email : decoded.email,
+      name : decoded.name
+    }));
+
     
     const userData = {
       first_name: decoded.given_name,
