@@ -7,20 +7,20 @@ import LegalAdvice from "./pages/LegalAdvice";
 import Acts from "./pages/Acts";
 import Navbar from './components/Navbar';
 import LandingPage from './components/auth/LandingPage';
+import LocateNearLawyers from './pages/LocateNearLawyers.jsx'
 
 const ProtectedRoute = ({ children }) => {
   // const user = JSON.parse(localStorage.getItem('nyaysahayak_user'));
   // if (!user) {
   //    return <Navigate to="/" replace />;
   // }
+  console.log(children)
   return children;
 };
 
-// Wrapper to use `useLocation` in Router scope
 const AppWrapper = () => {
   const location = useLocation();
 
-  // Don't show Navbar on landing page
   const hideNavbar = location.pathname === "/";
 
   return (
@@ -57,6 +57,15 @@ const AppWrapper = () => {
           element={
             <ProtectedRoute>
               <Acts />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/locate-lawyers" 
+          element={
+            <ProtectedRoute>
+              <LocateNearLawyers />
             </ProtectedRoute>
           } 
         />
