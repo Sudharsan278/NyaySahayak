@@ -5,7 +5,7 @@ const About = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Hero Section */}
-      <div className="bg-indigo-700 text-white text-center py-12">
+      <div className="text-blue-700 text-center py-12">
         <h1 className="text-3xl font-bold">About NyaySahayak</h1>
         <p className="mt-2 text-lg">Your personal legal assistant</p>
       </div>
