@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/acts")
-@CrossOrigin(origins = "http://localhost:5173")public class ActsController {
+@CrossOrigin(origins = "http://localhost:5173")
+
+public class ActsController {
 
 	@Autowired
 	private ActsService service;

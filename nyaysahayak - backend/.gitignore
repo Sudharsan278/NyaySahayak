@@ -77,6 +77,11 @@ build/
 !**/application.yaml
 nyaysahayak/src/main/resources/application.properties
 
+# Docker
+**/data/       
+*.pid
+*.sock
+
 ### Environment Variables ###
 .env
 .env.local
@@ -112,3 +117,11 @@ generated-test-sources/
 *.db
 *.sqlite
 *.sqlite3
+
+microservices/user-service/user-service/src/main/resources/application.properties
+microservices/lawyer-service/lawyer-service/src/main/resources/application.properties
+microservices/act-service/act-service/src/main/resources/application.properties
+microservices/groq-service/groq-service/src/main/resources/application.properties
+microservices/favorite-service/favorite-service/src/main/resources/application.properties
+microservices/api-gateway/api-gateway/src/main/resources/application.properties
+microservices/eureka-server/eureka-server/src/main/resources/application.properties

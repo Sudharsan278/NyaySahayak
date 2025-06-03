@@ -65,19 +65,21 @@ const LawyerMapInterface = () => {
   const fetchLawyers = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      
-      const response = await fetch('http://localhost:8080/api/lawyers');
+      // Fetch data from the API
+      const response = await fetch('http://localhost:8080/api/lawyers/get-lawyers');
         
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Failed to fetch lawyers: ${response.status} ${response.statusText}`);
       }
       
       const lawyersData = await response.json();
+      console.log('Fetched lawyers data:', lawyersData);
       
+      // Add coordinates to each lawyer
       const lawyersWithCoordinates = await Promise.all(
         lawyersData.map(async (lawyer) => {
-          console.log(lawyer)
           const coordinates = await geocodeLocation(lawyer.location);
           return {
             ...lawyer,
@@ -88,28 +90,12 @@ const LawyerMapInterface = () => {
       
       setLawyers(lawyersWithCoordinates);
     } catch (err) {
-      setError(err.message);
+      setError(`Error loading lawyers: ${err.message}`);
       console.error('Error fetching lawyers:', err);
-      
-      setSampleData();
+      setLawyers([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
-  };
-
-  const setSampleData = async () => {
-        
-    const lawyersWithCoordinates = await Promise.all(
-      sampleLawyers.map(async (lawyer) => {
-        const coordinates = await geocodeLocation(lawyer.location);
-        return {
-          ...lawyer,
-          coordinates: coordinates || { lat: 0, lng: 0 }
-        };
-      })
-    );
-    
-    setLawyers(lawyersWithCoordinates);
   };
 
   useEffect(() => {
@@ -122,7 +108,12 @@ const LawyerMapInterface = () => {
   };
 
   const getFirstName = (fullName) => {
-    return fullName.split(' ')[1] || fullName.split(' ')[0];
+    const parts = fullName.split('.');
+    // If name starts with "Adv." or "Adv", get the next part
+    if (parts[0].toLowerCase().startsWith('adv')) {
+      return parts[1] || parts[0];
+    }
+    return parts[1];
   };
 
   const PopupContent = ({ lawyer }) => (
@@ -288,6 +279,22 @@ const LawyerMapInterface = () => {
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
                   <p className="text-gray-600">Loading lawyers...</p>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
+                <div className="text-center">
+                  <div className="text-red-600 mb-4 text-lg">⚠️</div>
+                  <p className="text-red-600 mb-2">Failed to load lawyers</p>
+                  <p className="text-gray-600 text-sm">{error}</p>
+                  <button 
+                    onClick={fetchLawyers}
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200"
+                  >
+                    Retry
+                  </button>
                 </div>
               </div>
             )}

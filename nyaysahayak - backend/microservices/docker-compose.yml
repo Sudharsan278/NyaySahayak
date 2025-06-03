@@ -1,0 +1,183 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Databases (Separate containers)
+  user-db:
+    image: postgres:15
+    container_name: user-db
+    environment:
+      POSTGRES_DB: nyaysahayak_users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2782004
+    ports:
+      - "5433:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  lawyer-db:
+    image: postgres:15
+    container_name: lawyer-db
+    environment:
+      POSTGRES_DB: nyaysahayak_lawyers
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2782004
+    ports:
+      - "5434:5432"
+    volumes:
+      - lawyer_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  act-db:
+    image: postgres:15
+    container_name: act-db
+    environment:
+      POSTGRES_DB: nyaysahayak_acts
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2782004
+    ports:
+      - "5435:5432"
+    volumes:
+      - act_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  favorite-db:
+    image: postgres:15
+    container_name: favorite-db
+    environment:
+      POSTGRES_DB: nyaysahayak_favorites
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2782004
+    ports:
+      - "5436:5432"
+    volumes:
+      - favorite_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  # Eureka Server
+  eureka-server:
+    build: ./eureka-server/eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 10 bash -c '</dev/tcp/localhost/8761' && echo 'Health check passed' || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # User Service
+  user-service:
+    build: ./user-service/user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - user-db
+      - eureka-server
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/nyaysahayak_users
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2782004
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # Lawyer Service
+  lawyer-service:
+    build: ./lawyer-service/lawyer-service
+    container_name: lawyer-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - lawyer-db
+      - eureka-server
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://lawyer-db:5432/nyaysahayak_lawyers
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2782004
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # Groq Service
+  groq-service:
+    build: ./groq-service/groq-service
+    container_name: groq-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-network
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # Act Service
+  act-service:
+    build: ./act-service/act-service
+    container_name: act-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - act-db
+      - eureka-server
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://act-db:5432/nyaysahayak_acts
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2782004
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # Favorite Service
+  favorite-service:
+    build: ./favorite-service/favorite-service
+    container_name: favorite-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - favorite-db
+      - eureka-server
+      - act-service
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://favorite-db:5432/nyaysahayak_favorites
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2782004
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - ACT_SERVICE_URL=http://act-service:8084
+
+volumes:
+  user_data:
+  lawyer_data:
+  act_data:
+  favorite_data:
+
+networks:
+  microservices-network:
+    driver: bridge

@@ -13,7 +13,7 @@ const Navbar = () => {
 
     return (
         <div>
-        <nav className="bg-indigo-700">
+        <nav className="bg-gradient-to-br from-blue-700 to-blue-500">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
@@ -22,22 +22,22 @@ const Navbar = () => {
                 </div>
                 <div className="hidden md:block">
                     <div className="ml-10 flex items-baseline space-x-4">
-                    <Link to="/dashboard" className="text-white hover:bg-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                    <Link to="/dashboard" className="text-white hover:bg-blue-400 px-3 py-2 rounded-md text-sm font-medium">
                         Dashboard
                     </Link>
-                    <Link to="/about" className="text-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    <Link to="/about" className="text-gray-300 hover:bg-blue-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         About
                     </Link>
-                    <Link to="/upload" className="text-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    <Link to="/upload" className="text-gray-300 hover:bg-blue-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         Upload Legal Doc
                     </Link>
-                    <Link to="/advice" className="text-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    <Link to="/advice" className="text-gray-300 hover:bg-blue-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         Get Legal Advice
                     </Link>
-                    <Link to="/acts" className="text-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    <Link to="/acts" className="text-gray-300 hover:bg-blue-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         Acts
                     </Link>
-                    <Link to="/locate-lawyers" className="text-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    <Link to="/locate-lawyers" className="text-gray-300 hover:bg-blue-400 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         Locate Lawyers
                     </Link>
                     </div>
