@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
+import { Scale, Globe, Users, ArrowRight, CheckCircle, Sparkles, Shield, BookOpen, X } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import heroImage from '../../assets/justice-scale.png';
+import { GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,12 +19,12 @@ const LandingPage = () => {
     };
     
     window.addEventListener('scroll', handleScroll);
+    setTimeout(() => setIsLoaded(true), 100);
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  const navigate = useNavigate();
 
   const handleGoogleSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
@@ -40,7 +43,7 @@ const LandingPage = () => {
       email: decoded.email,
       picture: decoded.picture
     };
-    
+
     const saveUser = async (userData) => {
       try{
         
@@ -63,387 +66,294 @@ const LandingPage = () => {
     saveUser(userData);
   };
 
-  const handleGoogleError = () => {
+   const handleGoogleError = () => {
     console.log("Login failed!");
   };
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen">
-      <nav className="fixed w-full z-50 bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-gray-100"></div>
+      
+      <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/50 transition-all duration-300 hover:bg-white/90">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex-shrink-0 flex items-center">
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center"
-              >
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 flex items-center justify-center mr-3">
-                  <span className="text-white text-xl font-bold drop-shadow-sm">न्</span>
+              <div className={`flex items-center transform transition-all duration-1000 hover:scale-105 cursor-pointer ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+                <div className="bg-slate-900 p-2 rounded-xl shadow-sm mr-3 transition-all duration-300 hover:bg-slate-800 hover:shadow-md">
+                  <Scale className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">NyaySahayak</h1>
-              </motion.div>
+                <h1 className="text-2xl font-semibold text-slate-900 transition-colors duration-300 hover:text-slate-700">
+                  NyaySahayak
+                </h1>
+              </div>
             </div>
             <div className="flex items-center">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out"
+                className={`bg-slate-900 hover:bg-slate-800 text-white font-medium py-2 px-6 rounded-xl shadow-sm transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
               >
                 Get Started
-              </motion.button>
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      <section className="pt-24 pb-16 md:pt-32 md:pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                <span className="text-blue-600">AI-Powered</span> Legal Assistance for Everyone
+      <section className="pt-24 pb-16 md:pt-32 md:pb-24 relative">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className={`transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+              <div className="flex items-center mb-6 group cursor-pointer">
+                <Sparkles className="w-5 h-5 text-slate-600 mr-2 transition-all duration-300 group-hover:text-slate-900 group-hover:scale-110" />
+                <span className="text-slate-600 font-medium text-sm transition-colors duration-300 group-hover:text-slate-900">AI-Powered Legal Revolution</span>
+              </div>
+              
+              <h1 className="text-4xl md:text-6xl font-light leading-tight mb-6 text-slate-900 tracking-tight hover:text-slate-700 transition-colors duration-500 cursor-default">
+                Legal Justice
+                <br />
+                <span className="font-semibold">for Everyone</span>
               </h1>
-              <p className="mt-6 text-lg text-gray-600">
-                NyaySahayak empowers economically challenged individuals with accessible legal advice, 
-                education on Indian articles, and multilingual document understanding.
+              
+              <p className="text-xl text-slate-600 mb-8 leading-relaxed font-light hover:text-slate-700 transition-colors duration-300 cursor-default">
+                Empowering economically challenged individuals with AI-driven legal assistance, 
+                multilingual document understanding, and expert community support.
               </p>
-              <div className="mt-10">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
                   onClick={() => setIsModalOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 ease-in-out"
+                  className="bg-slate-900 hover:bg-slate-800 text-white font-medium py-4 px-8 rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center group transform hover:scale-105 hover:shadow-lg active:scale-95"
                 >
                   Continue with Google
-                </motion.button>
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                </button>
               </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="relative h-64 md:h-auto"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-white rounded-3xl flex items-center justify-center shadow-xl">
-                <motion.div
-                  animate={{ 
-                    y: [0, 10, 0],
-                    rotateZ: [0, 5, 0, -5, 0]
-                  }}
-                  transition={{ 
-                    duration: 8,
-                    repeat: Infinity,
-                    repeatType: "mirror"
-                  }}
-                  className="w-40 h-40 md:w-64 md:h-64"
-                >
-                  <img src={heroImage} className='w-full h-full rounded-full bg-gradient-to-br items-center justify-center shadow-lg'/>
-
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: scrollY > 100 ? 1 : 0, y: scrollY > 100 ? 0 : 30 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl font-bold text-gray-900">Innovative Features</h2>
-            <p className="mt-4 text-lg text-gray-600">Bringing legal assistance to those who need it most</p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 200 ? 1 : 0, y: scrollY > 200 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="bg-blue-50 rounded-xl p-6 shadow-md"
-            >
-              <div className="h-16 w-16 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">AI-Powered Legal Advice</h3>
-              <p className="text-gray-600">
-                Get instant legal guidance powered by advanced AI technology, tailored to your specific situation.
-              </p>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 200 ? 1 : 0, y: scrollY > 200 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="bg-blue-50 rounded-xl p-6 shadow-md"
-            >
-              <div className="h-16 w-16 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Multilingual Support</h3>
-              <p className="text-gray-600">
-                Understand legal documents in your preferred language with our Sarvam API integration.
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 200 ? 1 : 0, y: scrollY > 200 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="bg-blue-50 rounded-xl p-6 shadow-md"
-            >
-              <div className="h-16 w-16 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Expert Community</h3>
-              <p className="text-gray-600">
-                Connect with legal advocates to get your questions answered by professionals.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: scrollY > 500 ? 1 : 0, y: scrollY > 500 ? 0 : 30 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl font-bold text-gray-900">How It Works</h2>
-            <p className="mt-4 text-lg text-gray-600">Simple steps to get the legal assistance you need</p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 600 ? 1 : 0, y: scrollY > 600 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-center"
-            >
-              <div className="mx-auto h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Sign In</h3>
-              <p className="text-gray-600">
-                Create your account with a simple Google login to access all features.
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 600 ? 1 : 0, y: scrollY > 600 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-center"
-            >
-              <div className="mx-auto h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Ask Questions</h3>
-              <p className="text-gray-600">
-                Describe your legal concerns or upload documents for analysis.
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 600 ? 1 : 0, y: scrollY > 600 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-center"
-            >
-              <div className="mx-auto h-12 w-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Get Support</h3>
-              <p className="text-gray-600">
-                Receive instant AI guidance or connect with legal professionals.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: scrollY > 900 ? 1 : 0, y: scrollY > 900 ? 0 : 30 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl font-bold text-gray-900">User Testimonials</h2>
-            <p className="mt-4 text-lg text-gray-600">See how NyaySahayak is making a difference</p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 1000 ? 1 : 0, y: scrollY > 1000 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="bg-blue-50 p-6 rounded-xl shadow-md"
-            >
-              <div className="flex items-center mb-4">
-                <div className="h-12 w-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">RK</div>
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">Rajesh Kumar</h4>
-                  <p className="text-gray-600">Small Business Owner, Chennai</p>
+            <div className={`relative transform transition-all duration-1000 delay-200 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+              <div className="relative group cursor-pointer">
+                <div className="w-full h-80 md:h-96 bg-white rounded-2xl shadow-lg border border-gray-200 flex items-center justify-center relative overflow-hidden transition-all duration-500 group-hover:shadow-2xl group-hover:scale-105">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 to-transparent group-hover:from-slate-100/70 transition-all duration-500"></div>
+                  <Scale className="w-32 h-32 text-slate-400 transition-all duration-500 group-hover:text-slate-600 group-hover:scale-110" />
+                </div>
+                
+                <div className="absolute -top-6 -right-6 bg-slate-900 p-3 rounded-xl shadow-lg transition-all duration-300 hover:bg-slate-800 hover:scale-110 hover:shadow-xl cursor-pointer">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                
+                <div className="absolute -bottom-4 -left-4 bg-slate-900 p-3 rounded-xl shadow-lg transition-all duration-300 hover:bg-slate-800 hover:scale-110 hover:shadow-xl cursor-pointer">
+                  <BookOpen className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <p className="text-gray-700 italic">
-                "NyaySahayak helped me understand my business registration documents in Tamil. The AI explained every section clearly and saved me expensive legal consultation fees."
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: scrollY > 1000 ? 1 : 0, y: scrollY > 1000 ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="bg-blue-50 p-6 rounded-xl shadow-md"
-            >
-              <div className="flex items-center mb-4">
-                <div className="h-12 w-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">AP</div>
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">Anjali Patel</h4>
-                  <p className="text-gray-600">Student, Ahmedabad</p>
-                </div>
-              </div>
-              <p className="text-gray-700 italic">
-                "As a law student, I use NyaySahayak to learn about Indian articles in a simple language. The community feature also helped me connect with practicing advocates for guidance."
-              </p>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: scrollY > 1300 ? 1 : 0, y: scrollY > 1300 ? 0 : 30 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h2 className="text-3xl font-bold text-white">Ready to Get Started?</h2>
-            <p className="mt-4 text-xl text-blue-100">
-              Join NyaySahayak today and access legal assistance in your language
-            </p>
-            <div className="mt-10">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsModalOpen(true)}
-                className="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-blue-50 transition duration-300 ease-in-out"
+      <section className="py-20 bg-white relative">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+          <div className={`text-center mb-16 transform transition-all duration-1000 ${scrollY > 100 ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <h2 className="text-4xl font-light text-slate-900 mb-4 tracking-tight hover:text-slate-700 transition-colors duration-300 cursor-default">
+              Revolutionary <span className="font-semibold">Features</span>
+            </h2>
+            <p className="text-xl text-slate-600 font-light hover:text-slate-700 transition-colors duration-300 cursor-default">Transforming legal accessibility with cutting-edge technology</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <Sparkles className="h-8 w-8 text-slate-600" />,
+                title: "AI-Powered Legal Advice",
+                description: "Get instant, personalized legal guidance powered by advanced AI technology tailored to your specific situation and needs."
+              },
+              {
+                icon: <Globe className="h-8 w-8 text-slate-600" />,
+                title: "Multilingual Support",
+                description: "Understand complex legal documents in your preferred language with our advanced Sarvam API integration system."
+              },
+              {
+                icon: <Users className="h-8 w-8 text-slate-600" />,
+                title: "Expert Community",
+                description: "Connect directly with verified legal advocates and professionals to get your questions answered by experts."
+              }
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className={`group transform transition-all duration-700 cursor-pointer ${scrollY > 200 ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+                style={{ transitionDelay: `${index * 100}ms` }}
               >
-                Continue with Google
-              </motion.button>
-            </div>
-          </motion.div>
+                <div className="bg-gray-50 hover:bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 h-full">
+                  <div className="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-slate-900 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                    <div className="group-hover:text-white transition-all duration-300 group-hover:scale-110">
+                      {feature.icon}
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-4 group-hover:text-slate-700 transition-colors duration-300">{feature.title}</h3>
+                  <p className="text-slate-600 leading-relaxed font-light group-hover:text-slate-700 transition-colors duration-300">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <footer className="bg-gray-800 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between">
-            <div className="mb-8 md:mb-0">
-              <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 flex items-center justify-center mr-3">
-                  <span className="text-white text-xl font-bold drop-shadow-sm">न्</span>
-                </div>
-                <h3 className="text-2xl font-bold">NyaySahayak</h3>
-              </div>
-              <p className="mt-2 text-gray-400">
-                Empowering access to justice through technology
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Features</h4>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-400 hover:text-white">AI Legal Advice</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white">Document Analysis</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white">Community Support</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Resources</h4>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-400 hover:text-white">Legal Encyclopedia</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white">FAQs</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white">Blog</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Contact</h4>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-400 hover:text-white">Support</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white">Terms of Service</a></li>
-                </ul>
-              </div>
-            </div>
+      <section className="py-20 bg-gray-50 relative">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+          <div className={`text-center mb-16 transform transition-all duration-1000 ${scrollY > 500 ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <h2 className="text-4xl font-light text-slate-900 mb-4 tracking-tight hover:text-slate-700 transition-colors duration-300 cursor-default">
+              How It <span className="font-semibold">Works</span>
+            </h2>
+            <p className="text-xl text-slate-600 font-light hover:text-slate-700 transition-colors duration-300 cursor-default">Three simple steps to access legal assistance</p>
           </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} NyaySahayak. All rights reserved.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                title: "Sign In Securely",
+                description: "Create your account with Google's secure authentication to access all premium features and personalized assistance."
+              },
+              {
+                step: "02", 
+                title: "Ask Questions",
+                description: "Describe your legal concerns in detail or upload important documents for comprehensive AI-powered analysis."
+              },
+              {
+                step: "03",
+                title: "Get Expert Support", 
+                description: "Receive instant AI guidance or connect directly with verified legal professionals for specialized assistance."
+              }
+            ].map((item, index) => (
+              <div
+                key={index}
+                className={`text-center group cursor-pointer transform transition-all duration-700 hover:scale-105 ${scrollY > 600 ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="relative">
+                  <div className="mx-auto h-20 w-20 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-semibold mb-6 shadow-sm group-hover:scale-110 group-hover:shadow-xl group-hover:bg-slate-800 transition-all duration-300">
+                    {item.step}
+                  </div>
+                  {index < 2 && (
+                    <div className="hidden md:block absolute top-10 left-full w-full h-px bg-gray-200 transform translate-x-4 group-hover:bg-slate-300 transition-colors duration-300"></div>
+                  )}
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4 group-hover:text-slate-700 transition-colors duration-300">{item.title}</h3>
+                <p className="text-slate-600 leading-relaxed max-w-xs mx-auto font-light group-hover:text-slate-700 transition-colors duration-300">
+                  {item.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
-      </footer>
+      </section>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="bg-white rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl"
-          >
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center mb-4">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 flex items-center justify-center mr-3">
-                  <span className="text-white text-xl font-bold drop-shadow-sm">न्</span>
+      <section className="py-20 bg-white relative">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+          <div className={`text-center mb-16 transform transition-all duration-1000 ${scrollY > 900 ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <h2 className="text-4xl font-light text-slate-900 mb-4 tracking-tight hover:text-slate-700 transition-colors duration-300 cursor-default">
+              Making Impact <span className="font-semibold">Across India</span>
+            </h2>
+            <p className="text-xl text-slate-600 font-light hover:text-slate-700 transition-colors duration-300 cursor-default">Transforming lives through accessible legal assistance</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { number: "50K+", label: "Users Assisted", icon: <Users className="w-8 h-8" /> },
+              { number: "25+", label: "Languages Supported", icon: <Globe className="w-8 h-8" /> },
+              { number: "10K+", label: "Documents Analyzed", icon: <BookOpen className="w-8 h-8" /> },
+              { number: "95%", label: "Success Rate", icon: <CheckCircle className="w-8 h-8" /> }
+            ].map((stat, index) => (
+              <div
+                key={index}
+                className={`text-center group cursor-pointer transform transition-all duration-700 hover:scale-110 ${scrollY > 1000 ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+                style={{ transitionDelay: `${index * 50}ms` }}
+              >
+                <div className="bg-gray-50 hover:bg-slate-900 rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-500 group hover:-translate-y-1">
+                  <div className="text-slate-600 group-hover:text-white mb-4 flex justify-center group-hover:scale-125 transition-all duration-300">
+                    {stat.icon}
+                  </div>
+                  <div className="text-3xl font-semibold text-slate-900 group-hover:text-white mb-2 transition-colors duration-300">
+                    {stat.number}
+                  </div>
+                  <p className="text-slate-600 group-hover:text-white font-medium transition-colors duration-300">{stat.label}</p>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">NyaySahayak</h3>
               </div>
-              <p className="text-gray-600">
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 bg-slate-900 relative">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+          <div className={`text-center transform transition-all duration-1000 ${scrollY > 1300 ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <h2 className="text-4xl md:text-5xl font-light text-white mb-6 tracking-tight hover:text-gray-200 transition-colors duration-300 cursor-default">
+              Ready to Transform Your <span className="font-semibold">Legal Journey?</span>
+            </h2>
+            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto font-light hover:text-slate-200 transition-colors duration-300 cursor-default">
+              Join thousands of users who are already accessing justice through our AI-powered platform
+            </p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-white text-slate-900 font-medium py-4 px-8 rounded-xl shadow-sm hover:bg-gray-50 transition-all duration-300 flex items-center justify-center group mx-auto hover:scale-105 hover:shadow-lg active:scale-95"
+            >
+              Continue with Google
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/20 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl border border-gray-200 relative transform transition-all duration-300 scale-100 hover:scale-105">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-all duration-300 hover:scale-110 hover:rotate-90"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center mb-4 group">
+                <div className="bg-slate-900 p-3 rounded-xl shadow-sm mr-3 group-hover:scale-110 group-hover:bg-slate-800 transition-all duration-300">
+                  <Scale className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-semibold text-slate-900 group-hover:text-slate-700 transition-colors duration-300">
+                  NyaySahayak
+                </h3>
+              </div>
+              <p className="text-slate-600 font-light hover:text-slate-700 transition-colors duration-300">
                 Sign in to access personalized legal assistance
               </p>
             </div>
+            
             <div className="flex flex-col items-center">
-              <GoogleLogin
+               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
                 size="large"
                 width="240"
-                theme="filled_blue"
+                theme="filled_black"
                 shape="circle"
                 text="continue_with"
                 locale="en"
                 useOneTap
               />
-              <p className="mt-6 text-sm text-gray-500 text-center">
+                <svg className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+              <p className="text-sm text-slate-500 text-center font-light hover:text-slate-600 transition-colors duration-300">
                 By continuing, you agree to our Terms of Service and Privacy Policy
               </p>
             </div>
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

@@ -38,8 +38,8 @@ public class GroqController {
 
     @PostMapping("/summarize")
     public Mono<Map> chatWithGroq(@RequestBody Map<String, Object> request) {
-        // Make sure streaming is disabled for this endpoint
-        if (request.containsKey("stream")) {
+
+    	if (request.containsKey("stream")) {
             request.put("stream", false);
         }
         
@@ -51,7 +51,6 @@ public class GroqController {
             systemMessage.put("content", "Check whether the following is a legal document or not. "
                     + "If it is, summarize it briefly. If it is not, inform the user that it does not appear to be a legal document and suggest verifying the input.");
 
-            // Add system message at the beginning of the list
             messages.add(0, systemMessage);
         }
 
@@ -64,17 +63,17 @@ public class GroqController {
     
     @PostMapping("/analyze")
     public Mono<Map> analyzeLegalDocument(@RequestBody Map<String, Object> request) {
-        // Create a new request object with the legal document analysis prompt
+        
         Map<String, Object> analysisRequest = new HashMap<>(request);
         
         if (analysisRequest.containsKey("messages") && analysisRequest.get("messages") instanceof java.util.List) {
             java.util.List<Map<String, Object>> messages = (java.util.List<Map<String, Object>>) analysisRequest.get("messages");
             
             if (!messages.isEmpty()) {
-                // Get the original user message content
+                
                 String userContent = (String) messages.get(0).get("content");
                 
-                // Create an enhanced prompt with the analysis instructions
+                
                 String enhancedPrompt = "You are a legal document analysis expert. Analyze the provided document comprehensively " +
                     "and structure your response with the following sections:\n\n" +
                     "1. SUMMARY: A concise summary of the document in 2-3 sentences.\n" +
@@ -84,20 +83,18 @@ public class GroqController {
                     "5. LEGAL IMPLICATIONS: Explain potential legal consequences or implications.\n" +
                     "6. RECOMMENDATIONS: Provide actionable advice regarding this document.\n" +
                     "7. RED FLAGS: Highlight any concerning elements requiring special attention.\n\n" +
-                    "8. EXAMPLES: Provide any suitable examples if possible so that it is more easier to understand\n" +
                     "Format each section with headers and clear points in a very detailed manner. Remember that your response should be in such a way that.\n\n" +
-                    "it is easier to understand even if the person doesn't know nothing about it"+
-                    "Also attach any real time incident that is similar to this"+
+                    "it is easier to understand even if the person doesn't know nothing about it"+  
                     "All the headings that i have mentioned should be in bold and the remaining in a normal text format"+
+                    "Explain it elaborately"+
                     "Document to analyze: " + userContent;
                 
-                // Replace the original message with the enhanced prompt
                 messages.get(0).put("content", enhancedPrompt);
                 analysisRequest.put("messages", messages);
             }
         }
         
-        // Make sure streaming is disabled for this endpoint
+        
         if (analysisRequest.containsKey("stream")) {
             analysisRequest.put("stream", false);
         }
@@ -113,7 +110,6 @@ public class GroqController {
     @PostMapping("/get-advice")
     public Mono<Map> getLegalAdvice(@RequestBody Map<String, Object> request) {
         try {
-            // Extract query and category from request
             String query = (String) request.get("query");
             String category = (String) request.get("category");
             
@@ -123,31 +119,25 @@ public class GroqController {
                 return Mono.just(errorResponse);
             }
 
-            // Create system prompt based on category
             String systemPrompt = createSystemPrompt(category);
             
-            // Create enhanced user prompt
             String enhancedUserPrompt = createEnhancedUserPrompt(query, category);
             
-            // Create messages list for Groq API
             List<Map<String, String>> messages = new ArrayList<>();
             
-            // Add system message
             Map<String, String> systemMessage = new HashMap<>();
             systemMessage.put("role", "system");
             systemMessage.put("content", systemPrompt);
             messages.add(systemMessage);
             
-            // Add user message
             Map<String, String> userMessage = new HashMap<>();
             userMessage.put("role", "user");
             userMessage.put("content", enhancedUserPrompt);
             messages.add(userMessage);
             
-            // Create request payload for Groq API
             Map<String, Object> groqRequest = new HashMap<>();
             groqRequest.put("messages", messages);
-            groqRequest.put("model", "llama3-8b-8192"); // You can configure this
+            groqRequest.put("model", "llama3-8b-8192"); 
             groqRequest.put("temperature", 0.3);
             groqRequest.put("max_tokens", 1000);
             groqRequest.put("stream", false);
@@ -225,16 +215,13 @@ public class GroqController {
         Map<String, Object> processedResponse = new HashMap<>();
         
         try {
-            // Extract the AI response from Groq API response
             Map<String, Object> choices = (Map<String, Object>) ((List) groqResponse.get("choices")).get(0);
             Map<String, Object> message = (Map<String, Object>) choices.get("message");
             String content = (String) message.get("content");
             
-            // Parse the structured response
             processedResponse.put("success", true);
             processedResponse.put("answer", content);
             
-            // Extract legal references if present in the response
             List<String> references = extractLegalReferences(content);
             if (!references.isEmpty()) {
                 processedResponse.put("references", references);

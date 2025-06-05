@@ -1,5 +1,6 @@
 package ptu.fsd.nyaysahayak.lawyer_service.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,12 @@ public class LawyerService {
 	
 	public Lawyer addLawyer(Lawyer lawyer) {
 		return repo.save(lawyer);
+	}
+	
+	public List<Lawyer> addLawyer(List<Lawyer> lawyers) {
+		if(lawyers == null || lawyers.isEmpty())
+			return new ArrayList<>();
+		return repo.saveAll(lawyers);
 	}
 	
 }

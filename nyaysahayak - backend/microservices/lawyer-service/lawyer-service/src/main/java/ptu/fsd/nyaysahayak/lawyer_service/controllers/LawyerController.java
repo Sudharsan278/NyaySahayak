@@ -29,4 +29,8 @@ public class LawyerController {
 	        return service.addLawyer(lawyer);
 	    }
 	
+	    @PostMapping("/save-lawyers")
+	    public List<Lawyer> addLawyer(@RequestBody List<Lawyer> lawyers) {
+	        return service.addLawyer(lawyers);
+	    }
 }

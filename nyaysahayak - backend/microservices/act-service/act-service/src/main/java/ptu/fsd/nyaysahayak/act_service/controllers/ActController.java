@@ -38,11 +38,16 @@ public class ActController {
 		return act.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 	}
 	
-	@PostMapping
+	@PostMapping("/save-act")
     public Act createOrUpdateAct(@RequestBody Act act) {
         return service.saveAct(act);
     }
 
+	@PostMapping("/save-acts")
+    public List<Act> createOrUpdateAct(@RequestBody List <Act> act) {
+        return service.saveAct(act);
+    }
+	
     @PutMapping("/{id}")
     public ResponseEntity<Act> updateAct(@PathVariable int id, @RequestBody Act actDetails) {
         Act updatedAct = service.updateAct(id, actDetails);

@@ -67,7 +67,6 @@ const LawyerMapInterface = () => {
       setLoading(true);
       setError(null);
       
-      // Fetch data from the API
       const response = await fetch('http://localhost:8080/api/lawyers/get-lawyers');
         
       if (!response.ok) {
@@ -77,7 +76,6 @@ const LawyerMapInterface = () => {
       const lawyersData = await response.json();
       console.log('Fetched lawyers data:', lawyersData);
       
-      // Add coordinates to each lawyer
       const lawyersWithCoordinates = await Promise.all(
         lawyersData.map(async (lawyer) => {
           const coordinates = await geocodeLocation(lawyer.location);
@@ -92,7 +90,7 @@ const LawyerMapInterface = () => {
     } catch (err) {
       setError(`Error loading lawyers: ${err.message}`);
       console.error('Error fetching lawyers:', err);
-      setLawyers([]); // Set empty array on error
+      setLawyers([]); 
     } finally {
       setLoading(false);
     }
@@ -109,7 +107,6 @@ const LawyerMapInterface = () => {
 
   const getFirstName = (fullName) => {
     const parts = fullName.split('.');
-    // If name starts with "Adv." or "Adv", get the next part
     if (parts[0].toLowerCase().startsWith('adv')) {
       return parts[1] || parts[0];
     }
@@ -129,7 +126,7 @@ const LawyerMapInterface = () => {
         />
         <div>
           <h3 className="text-lg font-bold text-gray-900">{lawyer.name}</h3>
-          <p className="text-blue-600 font-medium text-sm">{lawyer.specialization}</p>
+          <p className="text-slate-600 font-medium text-sm">{lawyer.specialization}</p>
         </div>
       </div>
       
@@ -161,7 +158,7 @@ const LawyerMapInterface = () => {
 
       <button
         onClick={() => handleBookMeeting(lawyer)}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center text-sm"
+        className="w-full bg-slate-600 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center text-sm"
       >
         <Calendar size={14} className="mr-2" />
         Book Meeting
@@ -185,11 +182,11 @@ const LawyerMapInterface = () => {
         <div className="bg-gradient-to-r from-slate-600 to-slate-700 text-white p-6 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold">Book a Meeting</h2>
-            <p className="text-blue-100">with {lawyer.name}</p>
+            <p className="text-slate-100">with {lawyer.name}</p>
           </div>
           <button
             onClick={() => setShowBookingModal(false)}
-            className="text-white hover:text-blue-200 transition duration-200"
+            className="text-white hover:text-slate-200 transition duration-200"
           >
             <X size={24} />
           </button>
@@ -230,32 +227,7 @@ const LawyerMapInterface = () => {
   );
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen">
-      {/* Header */}
-      <nav className="bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex-shrink-0 flex items-center">
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center"
-              >
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 flex items-center justify-center mr-3">
-                  <span className="text-white text-xl font-bold drop-shadow-sm">न्</span>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-900">NyaySahayak</h1>
-              </motion.div>
-            </div>
-            <div className="flex items-center">
-              <p className="text-gray-600 mr-4">Find Lawyers Near You</p>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
+    <div className="bg-gradient-to-b from-slate-50 to-white min-h-screen">
       <div className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <motion.div
@@ -267,7 +239,6 @@ const LawyerMapInterface = () => {
             <p className="text-gray-600">Connect with qualified lawyers in your area and book consultations easily.</p>
           </motion.div>
 
-          {/* Map Container */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -277,7 +248,7 @@ const LawyerMapInterface = () => {
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-[1000]">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div>
                   <p className="text-gray-600">Loading lawyers...</p>
                 </div>
               </div>
@@ -291,7 +262,7 @@ const LawyerMapInterface = () => {
                   <p className="text-gray-600 text-sm">{error}</p>
                   <button 
                     onClick={fetchLawyers}
-                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200"
+                    className="mt-4 bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition duration-200"
                   >
                     Retry
                   </button>
@@ -326,7 +297,6 @@ const LawyerMapInterface = () => {
             </MapContainer>
           </motion.div>
 
-          {/* Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -334,27 +304,26 @@ const LawyerMapInterface = () => {
             className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <Users className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-blue-600 mb-2">{lawyers.length}</div>
+              <Users className="w-8 h-8 text-slate-600 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-slate-600 mb-2">{lawyers.length}</div>
               <div className="text-gray-600">Available Lawyers</div>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <Award className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-blue-600 mb-2">
+              <Award className="w-8 h-8 text-slate-600 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-slate-600 mb-2">
                 {lawyers.length > 0 ? (lawyers.reduce((sum, lawyer) => sum + lawyer.rating, 0) / lawyers.length).toFixed(1) : '0'}
               </div>
               <div className="text-gray-600">Average Rating</div>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6 text-center">
-              <Clock className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-blue-600 mb-2">24/7</div>
+              <Clock className="w-8 h-8 text-slate-600 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-slate-600 mb-2">24/7</div>
               <div className="text-gray-600">Support Available</div>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Booking Modal */}
       <AnimatePresence>
         {showBookingModal && selectedLawyer && (
           <BookingModal lawyer={selectedLawyer} />

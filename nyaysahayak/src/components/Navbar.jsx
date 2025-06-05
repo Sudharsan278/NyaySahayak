@@ -32,7 +32,7 @@ const Navbar = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('nyaysahayak_user');
+        localStorage.removeItem('Logged in user');
         navigate('/');
     };
 
@@ -40,7 +40,7 @@ const Navbar = () => {
         { to: '/dashboard', label: 'Dashboard' },
         { to: '/upload', label: 'Upload Documents' },
         { to: '/advice', label: 'Legal Advice' },
-        { to: '/acts', label: 'Acts & Statutes' },
+        { to: '/acts', label: 'Acts' },
         { to: '/locate-lawyers', label: 'Find Lawyers' },
         { to: '/about', label: 'About' }
     ];

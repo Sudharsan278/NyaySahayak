@@ -37,8 +37,45 @@ const DocumentAnalyzer = () => {
     { code: 'ta-IN', name: 'Tamil' }
   ];
 
-  // Get API keys from environment variables
   const SARVAM_API_KEY = import.meta.env.VITE_SARVAM_API_KEY; 
+
+  const filterResponse = (responseText) => {
+    if (!responseText) return responseText;
+    
+    const lines = responseText.split('\n');
+    const filteredLines = [];
+    let skipSection = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      const upperLine = line.toUpperCase();
+      
+      if (upperLine.includes('**8. EXAMPLES**') || 
+          upperLine.includes('**EXAMPLES**') ||
+          upperLine.includes('8. EXAMPLES') ||
+          upperLine.includes('EXAMPLES') && (upperLine.includes('**') || upperLine.startsWith('#'))) {
+        skipSection = true;
+        continue;
+      }
+      
+      if (upperLine.includes('REAL TIME') || 
+          upperLine.includes('REAL-TIME') ||
+          upperLine.includes('INCIDENT') && upperLine.includes('SECTION')) {
+        skipSection = true;
+        continue;
+      }
+      
+      if (skipSection && line.match(/^\*\*\d+\./)) {
+        skipSection = false;
+      }
+      
+      if (!skipSection) {
+        filteredLines.push(lines[i]);
+      }
+    }
+    
+    return filteredLines.join('\n').trim();
+  };
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -149,6 +186,9 @@ const DocumentAnalyzer = () => {
       processedContent = processedContent.replace(/^## (.*?)(?=\n|$)/gm, '$1');
       processedContent = processedContent.replace(/^### (.*?)(?=\n|$)/gm, '$1');
       
+      processedContent = filterResponse(processedContent);
+      
+      console.log(processedContent)
       setResult(processedContent);
       setLoading(false);
     } catch (error) {
@@ -273,12 +313,10 @@ const DocumentAnalyzer = () => {
   const formatContent = (content) => {
     if (!content) return null;
     
-    // Replace markdown headers with HTML headers (without the #)
     let formattedContent = content.replace(/^# (.*?)(?=\n|$)/gm, '<h1 className="text-xl font-bold mb-3 mt-4">$1</h1>');
     formattedContent = formattedContent.replace(/^## (.*?)(?=\n|$)/gm, '<h2 className="text-lg font-bold mb-2 mt-3">$1</h2>');
     formattedContent = formattedContent.replace(/^### (.*?)(?=\n|$)/gm, '<h3 className="text-md font-semibold mb-2 mt-3">$1</h3>');
     
-    // Replace bold text
     formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     
     // Convert bullet points to HTML list items
@@ -291,7 +329,6 @@ const DocumentAnalyzer = () => {
       return `<ul className="list-disc mb-4">${match}</ul>`;
     });
     
-    // Convert paragraphs (segments separated by double newlines)
     const paragraphs = formattedContent.split(/\n\n+/);
     formattedContent = paragraphs.map(para => {
       // Skip wrapping if the paragraph already contains HTML tags
@@ -360,7 +397,7 @@ const DocumentAnalyzer = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold text-blue-600 mb-2">Legal Document Analyzer</h1>
+        <h1 className="text-3xl font-bold text-slate-600 mb-2">Legal Document Analyzer</h1>
         <p className="text-gray-600">Upload your legal documents for AI-powered analysis</p>
       </motion.div>
 
@@ -374,7 +411,7 @@ const DocumentAnalyzer = () => {
           className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
             uploadStatus === 'success' ? 'border-green-400 bg-green-50' :
             uploadStatus === 'error' ? 'border-red-400 bg-red-50' :
-            'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+            'border-gray-300 hover:border-slate-400 hover:bg-slate-50'
           }`}
           onClick={triggerFileInput}
           variants={itemVariants}
@@ -389,7 +426,7 @@ const DocumentAnalyzer = () => {
           
           {uploadStatus === 'idle' && (
             <>
-              <Upload className="w-12 h-12 mx-auto mb-4 text-blue-500" />
+              <Upload className="w-12 h-12 mx-auto mb-4 text-slate-500" />
               <h3 className="text-lg font-semibold mb-2">Drag & drop your document here</h3>
               <p className="text-gray-500">or click to browse (PDF or DOCX)</p>
             </>
@@ -401,7 +438,7 @@ const DocumentAnalyzer = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-                <Loader2 className="w-12 h-12 mx-auto mb-4 text-blue-500 animate-spin" />
+                <Loader2 className="w-12 h-12 mx-auto mb-4 text-slate-500 animate-spin" />
                 <h3 className="text-lg font-semibold mb-2">Processing your document...</h3>
             </motion.div>
           )}
@@ -453,13 +490,13 @@ const DocumentAnalyzer = () => {
           <div className="mb-6">
             <motion.div className="flex mb-4 bg-gray-100 rounded-lg overflow-hidden">
               <motion.button
-                className={`flex-1 py-3 px-6 font-medium transition-colors duration-200 ${analysisType === 'summarize' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`flex-1 py-3 px-6 font-medium transition-colors duration-200 ${analysisType === 'summarize' ? 'bg-slate-600 text-white' : 'bg-slate-300 text-gray-700 hover:bg-slate-200'}`}
                 onClick={() => handleAnalysisTypeChange('summarize')}
               >
                 Summarize
               </motion.button>
               <motion.button
-                className={`flex-1 py-3 px-6 font-medium transition-colors duration-200 ${analysisType === 'analyze' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`flex-1 py-3 px-6 font-medium transition-colors duration-200 ${analysisType === 'analyze' ? 'bg-slate-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                 onClick={() => handleAnalysisTypeChange('analyze')}
               >
                 Detailed Analysis
@@ -482,7 +519,7 @@ const DocumentAnalyzer = () => {
                     <p>{text}</p>
                     <button 
                       onClick={toggleShowFullText}
-                      className="text-blue-500 hover:text-blue-700 font-medium mt-2"
+                      className="text-slate-500 hover:text-slate-700 font-medium mt-2"
                     >
                       Show less
                     </button>
@@ -496,7 +533,7 @@ const DocumentAnalyzer = () => {
                     {text.length > 300 && (
                       <button 
                         onClick={toggleShowFullText}
-                        className="text-blue-500 hover:text-blue-700 font-medium mt-2"
+                        className="text-slate-500 hover:text-slate-700 font-medium mt-2"
                       >
                         See more
                       </button>
@@ -512,12 +549,12 @@ const DocumentAnalyzer = () => {
       <AnimatePresence>
         {loading ? (
           <motion.div 
-            className="text-center p-8 bg-blue-50 rounded-lg"
+            className="text-center p-8 bg-slate-50 rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <Loader2 className="w-12 h-12 mx-auto mb-4 text-blue-500 animate-spin" />
+            <Loader2 className="w-12 h-12 mx-auto mb-4 text-slate-500 animate-spin" />
             <h3 className="text-xl font-semibold mb-2">Analyzing your document</h3>
             <p className="text-gray-600">Our AI is processing your document...</p>
           </motion.div>
@@ -529,7 +566,7 @@ const DocumentAnalyzer = () => {
             animate="visible"
             exit="exit"
           >
-            <div className="bg-blue-600 text-white p-4">
+            <div className="bg-slate-600 text-white p-4">
               <h2 className="text-xl font-bold">
                 {analysisType === 'summarize' ? 'Document Summary' : 'Detailed Analysis'}
               </h2>
@@ -537,11 +574,11 @@ const DocumentAnalyzer = () => {
             
             <div className="bg-gray-100 p-4 flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-blue-500" />
+                <Globe className="w-5 h-5 text-slate-500" />
                 <select 
                   value={targetLanguage}
                   onChange={handleLanguageChange}
-                  className="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
                 >
                   {languages.map(lang => (
                     <option key={lang.code} value={lang.code}>
@@ -555,7 +592,7 @@ const DocumentAnalyzer = () => {
                 onClick={handleTranslateClick}
                 disabled={translating}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-white ${
-                  translating ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'
+                  translating ? 'bg-gray-400' : 'bg-slate-500 hover:bg-slate-600'
                 }`}
                 variants={translateButtonVariants}
                 initial="idle"
@@ -591,7 +628,7 @@ const DocumentAnalyzer = () => {
                 >
                   <div className="bg-gray-100 p-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <Globe className="w-5 h-5 text-indigo-500" />
+                      <Globe className="w-5 h-5 text-slate-500" />
                       <h3 className="font-medium text-gray-800">
                         {languages.find(lang => lang.code === targetLanguage)?.name || "Translated"} Translation
                       </h3>
@@ -601,7 +638,7 @@ const DocumentAnalyzer = () => {
                       onClick={() => handleTextToSpeech(translatedText, targetLanguage)}
                       disabled={speaking}
                       className={`flex items-center gap-2 px-3 py-1 rounded-md text-white ${
-                        speaking ? 'bg-gray-400' : 'bg-indigo-500 hover:bg-indigo-600'
+                        speaking ? 'bg-gray-400' : 'bg-slate-600 hover:bg-slate-800'
                       }`}
                       variants={translateButtonVariants}
                       initial="idle"

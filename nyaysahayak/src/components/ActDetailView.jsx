@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { X, Languages, RotateCcw, Scale, Calendar, Tag, Building2, Shield, AlertTriangle, Gavel, BookOpen } from 'lucide-react';
 
 const ActDetailView = ({ act, onClose }) => {
   const [translating, setTranslating] = useState(false);
@@ -7,6 +8,11 @@ const ActDetailView = ({ act, onClose }) => {
   const [error, setError] = useState(null);
   const [targetLanguage, setTargetLanguage] = useState('hi-IN');
   const [translationSection, setTranslationSection] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    setTimeout(() => setIsLoaded(true), 100);
+  }, []);
   
   const languages = [
     { code: 'bn-IN', name: 'Bengali' },
@@ -67,9 +73,7 @@ const ActDetailView = ({ act, onClose }) => {
     setError(null);
 
     try {
-      
       const SARVAM_API_KEY = import.meta.env.VITE_SARVAM_API_KEY;
-      
       const textToTranslate = act[sectionKey].slice(0, 1000);
       
       const response = await fetch('https://api.sarvam.ai/translate', {
@@ -105,22 +109,22 @@ const ActDetailView = ({ act, onClose }) => {
     setTranslatedContent(updatedTranslatedContent);
   };
 
-  // Define which sections are translatable
   const translatableSections = {
-    summary: "Summary",
-    keyProvisions: "Key Provisions",
-    authoritiesInvolved: "Authorities Involved",
-    applicability: "Applicability",
-    penalties: "Penalties",
-    impact: "Impact",
-    relatedLaws: "Related Laws"
+    summary: { title: "Summary", icon: BookOpen },
+    keyProvisions: { title: "Key Provisions", icon: Gavel },
+    authoritiesInvolved: { title: "Authorities Involved", icon: Building2 },
+    applicability: { title: "Applicability", icon: Shield },
+    penalties: { title: "Penalties", icon: AlertTriangle },
+    impact: { title: "Impact", icon: Scale },
+    relatedLaws: { title: "Related Laws", icon: BookOpen }
   };
 
-  const renderSection = (sectionKey, title, custom) => {
+  const renderSection = (sectionKey, sectionData, custom) => {
     if (!act[sectionKey]) return null;
 
     const isTranslated = translatedContent[sectionKey];
     const isTranslating = translating && translationSection === sectionKey;
+    const IconComponent = sectionData.icon;
 
     return (
       <motion.div 
@@ -128,50 +132,75 @@ const ActDetailView = ({ act, onClose }) => {
         custom={custom}
         initial="hidden"
         animate="visible"
+        className={`transform transition-all duration-700 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+        style={{ transitionDelay: `${custom * 100}ms` }}
       >
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-          <div className="flex items-center space-x-2">
-            {isTranslated ? (
-              <button
-                onClick={() => resetTranslation(sectionKey)}
-                className="inline-flex items-center px-2 py-1 text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
-              >
-                Show Original
-              </button>
-            ) : (
-              <>
-                <select
-                  value={targetLanguage}
-                  onChange={(e) => setTargetLanguage(e.target.value)}
-                  className="text-xs border border-gray-300 rounded px-1 py-1"
-                  disabled={isTranslating}
-                >
-                  {languages.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => handleTranslateClick(sectionKey)}
-                  disabled={isTranslating}
-                  className="inline-flex items-center px-2 py-1 text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 disabled:opacity-50"
-                >
-                  {isTranslating ? 'Translating...' : 'Translate'}
-                </button>
-              </>
-            )}
+        <div className="group relative">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-500 transform hover:-translate-y-1 relative overflow-hidden">
+            
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-900 transition-colors duration-300">
+                    <IconComponent className="w-5 h-5 text-slate-600 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900 group-hover:text-slate-800 transition-colors duration-300">
+                    {sectionData.title}
+                  </h3>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  {isTranslated ? (
+                    <button
+                      onClick={() => resetTranslation(sectionKey)}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all duration-300 hover:scale-105"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Show Original
+                    </button>
+                  ) : (
+                    <>
+                      <select
+                        value={targetLanguage}
+                        onChange={(e) => setTargetLanguage(e.target.value)}
+                        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white hover:border-gray-300 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                        disabled={isTranslating}
+                      >
+                        {languages.map((lang) => (
+                          <option key={lang.code} value={lang.code}>
+                            {lang.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => handleTranslateClick(sectionKey)}
+                        disabled={isTranslating}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-xl text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+                      >
+                        <Languages className="w-3 h-3" />
+                        {isTranslating ? 'Translating...' : 'Translate'}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              <div className="bg-slate-50/50 border border-slate-100 rounded-xl p-4 group-hover:bg-slate-50/80 transition-colors duration-300">
+                {error && translationSection === sectionKey ? (
+                  <div className="flex items-center gap-2 text-red-600 text-sm">
+                    <AlertTriangle className="w-4 h-4" />
+                    <p>{error}</p>
+                  </div>
+                ) : (
+                  <p className="text-slate-700 leading-relaxed text-sm">
+                    {isTranslated ? translatedContent[sectionKey] : act[sectionKey]}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          {error && translationSection === sectionKey ? (
-            <p className="text-red-500 text-sm">{error}</p>
-          ) : (
-            <p className="text-gray-700">
-              {isTranslated ? translatedContent[sectionKey] : act[sectionKey]}
-            </p>
-          )}
         </div>
       </motion.div>
     );
@@ -179,7 +208,7 @@ const ActDetailView = ({ act, onClose }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
       variants={backdropVariants}
       initial="hidden"
       animate="visible"
@@ -187,70 +216,105 @@ const ActDetailView = ({ act, onClose }) => {
       onClick={onClose}
     >
       <motion.div
-        className="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-4xl"
+        className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-6xl relative"
         variants={modalVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">{act.title}</h2>
-          <button
-            onClick={onClose}
-            className="text-white hover:text-indigo-200 focus:outline-none"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-8 py-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+          
+          <div className="relative z-10 flex justify-between items-start">
+            <div className="flex items-center gap-4">
+              <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                <Scale className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-white mb-1 tracking-tight">
+                  {act.title}
+                </h2>
+                <div className="flex items-center gap-4 text-slate-300 text-sm">
+                  <span className="inline-flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {act.year}
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Tag className="w-4 h-4" />
+                    {act.category}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              onClick={onClose}
+              className="text-white/80 hover:text-white hover:bg-white/20 p-2 rounded-xl transition-all duration-300 hover:scale-110"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="p-6 max-h-[80vh] overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
+        <div className="p-8 max-h-[80vh] overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <div className="lg:col-span-1">
               <motion.div 
-                className="bg-indigo-50 p-4 rounded-lg mb-4"
+                className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 transform transition-all duration-700 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
                 variants={sectionVariants}
                 custom={0}
                 initial="hidden"
                 animate="visible"
               >
-                <h3 className="text-lg font-medium text-indigo-800 mb-2">Basic Information</h3>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Category</p>
-                    <p className="text-indigo-700">{act.category}</p>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-slate-600" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Year</p>
-                    <p>{act.year}</p>
+                  <h3 className="text-lg font-semibold text-slate-900">Basic Information</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-slate-50/50 rounded-lg p-3">
+                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Category</p>
+                    <p className="text-slate-800 font-medium">{act.category}</p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Enactment Date</p>
-                    <p>{act.enactmentDate || 'Not specified'}</p>
+                  <div className="bg-slate-50/50 rounded-lg p-3">
+                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Year</p>
+                    <p className="text-slate-800 font-medium">{act.year}</p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Effective Date</p>
-                    <p>{act.effectiveDate || 'Not specified'}</p>
+                  <div className="bg-slate-50/50 rounded-lg p-3">
+                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Enactment Date</p>
+                    <p className="text-slate-800 font-medium">{act.enactmentDate || 'Not specified'}</p>
+                  </div>
+                  <div className="bg-slate-50/50 rounded-lg p-3">
+                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Effective Date</p>
+                    <p className="text-slate-800 font-medium">{act.effectiveDate || 'Not specified'}</p>
                   </div>
                 </div>
               </motion.div>
 
               {act.tags && (
                 <motion.div 
-                  className="bg-indigo-50 p-4 rounded-lg"
+                  className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 transform transition-all duration-700 delay-100 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
                   variants={sectionVariants}
                   custom={1}
                   initial="hidden"
                   animate="visible"
                 >
-                  <h3 className="text-lg font-medium text-indigo-800 mb-2">Tags</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                      <Tag className="w-5 h-5 text-slate-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900">Tags</h3>
+                  </div>
+                  
                   <div className="flex flex-wrap gap-2">
                     {act.tags.split(',').map((tag, index) => (
                       <span 
                         key={index}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors duration-300"
                       >
                         {tag.trim()}
                       </span>
@@ -260,22 +324,44 @@ const ActDetailView = ({ act, onClose }) => {
               )}
             </div>
 
-            <div className="md:col-span-2 space-y-6">
-              {Object.entries(translatableSections).map(([key, title], index) => 
-                renderSection(key, title, index + 2)
+            <div className="lg:col-span-3 space-y-6">
+              {Object.entries(translatableSections).map(([key, sectionData], index) => 
+                renderSection(key, sectionData, index + 2)
               )}
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex justify-end">
+        <div className="border-t border-gray-100 px-8 py-4 bg-white flex justify-between items-center">
+          <div className="inline-flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <p className="text-xs text-slate-600 font-medium">
+              Secure Legal Information
+            </p>
+          </div>
+          
           <button
             onClick={onClose}
-            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all duration-300 hover:scale-105"
           >
+            <X className="w-4 h-4" />
             Close
           </button>
         </div>
+
+        <div className="absolute top-32 right-8 opacity-5 animate-float pointer-events-none">
+          <Scale className="w-24 h-24 text-slate-400" />
+        </div>
+
+        <style jsx>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+          }
+          .animate-float {
+            animation: float 8s ease-in-out infinite;
+          }
+        `}</style>
       </motion.div>
     </motion.div>
   );
